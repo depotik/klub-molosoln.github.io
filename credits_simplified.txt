@@ -1,0 +1,100 @@
+          <TabsContent value="credits" className="space-y-4">
+                <Card className={`${currentTheme.card} border-2 shadow-xl hover:shadow-2xl transition-all duration-300`}>
+                  <CardHeader className="pb-4">
+                    <CardTitle className="flex items-center gap-2 text-xl">
+                      <CreditCard className="h-6 w-6" />
+                      Кредиты
+                      <Badge variant="outline" className="ml-2 text-xs bg-red-500/20 text-red-300 border-red-500/50">
+                        3% в день
+                      </Badge>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="pt-0">
+                    <div className="space-y-4">
+                      {/* Текущая задолженность */}
+                      <div className="bg-gradient-to-r from-red-600/20 to-red-500/20 p-4 rounded-xl border border-red-400/30">
+                        <div className="text-center">
+                          <div className="text-2xl font-bold text-red-300">
+                            {userData?.credits?.reduce((sum, credit) => sum + (credit.amount || 0), 0) || 0}
+                          </div>
+                          <div className="text-sm text-red-200">Текущая задолженность</div>
+                        </div>
+                      </div>
+
+                      {/* Взять кредит */}
+                      <div className="bg-gradient-to-r from-green-600/20 to-green-500/20 p-4 rounded-xl border border-green-400/30">
+                        <h3 className="text-lg font-semibold mb-3">Взять кредит</h3>
+                        <div className="flex flex-col sm:flex-row gap-2">
+                          <Input
+                            type="number"
+                            placeholder="Сумма кредита"
+                            value={creditAmount}
+                            onChange={(e) => setCreditAmount(Number(e.target.value))}
+                            className={`${currentTheme.input || 'bg-gray-800 border-gray-600 text-white placeholder-gray-400'}`}
+                          />
+                          <Button 
+                            onClick={() => handleTakeCredit()}
+                            disabled={!creditAmount || creditAmount < 100}
+                            className="bg-green-600 hover:bg-green-700 text-white whitespace-nowrap"
+                          >
+                            Взять кредит
+                          </Button>
+                        </div>
+                        <div className="flex flex-wrap gap-2 mt-3">
+                          <Button 
+                            onClick={() => handleTakeCredit(1000)}
+                            size="sm"
+                            variant="outline"
+                            className="border-green-400/50 text-green-300 hover:bg-green-600/20"
+                          >
+                            1000 🍃
+                          </Button>
+                          <Button 
+                            onClick={() => handleTakeCredit(5000)}
+                            size="sm"
+                            variant="outline"
+                            className="border-green-400/50 text-green-300 hover:bg-green-600/20"
+                          >
+                            5000 🍃
+                          </Button>
+                          <Button 
+                            onClick={() => handleTakeCredit(10000)}
+                            size="sm"
+                            variant="outline"
+                            className="border-green-400/50 text-green-300 hover:bg-green-600/20"
+                          >
+                            10000 🍃
+                          </Button>
+                        </div>
+                        <p className="text-xs text-gray-400 mt-2">Минимум: 100 🍃 • 3% в день</p>
+                      </div>
+
+                      {/* Активные кредиты */}
+                      {userData?.credits && userData.credits.length > 0 && (
+                        <div className="space-y-2">
+                          <h3 className="text-lg font-semibold">Активные кредиты:</h3>
+                          {userData.credits.map((credit) => (
+                            <div key={credit.id} className="bg-red-600/20 p-3 rounded-lg border border-red-400/30">
+                              <div className="flex justify-between items-center">
+                                <div>
+                                  <span className="font-medium">{credit.amount} 🍃</span>
+                                  <div className="text-xs text-red-200">
+                                    От {new Date(credit.createdAt).toLocaleDateString()}
+                                  </div>
+                                </div>
+                                <Button 
+                                  onClick={() => handleRepayCredit(credit.id, credit.amount)}
+                                  size="sm"
+                                  className="bg-red-600 hover:bg-red-700 text-white"
+                                >
+                                  Погасить
+                                </Button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>

@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Клуб молосольных огурчиков🥒</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      transition: background 0.5s;
+      overflow-x: hidden;
+      background: linear-gradient(145deg, #001f29, #073c4a) !important;
+    }
+    .container {
+      padding: 25px;
+      border-radius: 20px;
+      box-shadow: 0 10px 40px rgba(0, 255, 255, 0.3);
+      width: 95%;
+      max-width: 450px;
+      position: relative;
+      text-align: center;
+      transition: background 0.5s;
+      backdrop-filter: blur(10px);
+      background: linear-gradient(145deg, rgba(18, 51, 63, 0.9), rgba(26, 63, 79, 0.9)) !important;
+    }
+    h1 {
+      color: #ff7e6d;
+      font-size: 2.2em;
+      margin-bottom: 15px;
+      text-shadow: 0 0 15px rgba(255, 126, 109, 0.5);
+      background: linear-gradient(45deg, #ff7e6d, #ff9a9e);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .balance-display {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      color: #00ffbf;
+      font-size: 1.2rem;
+      font-weight: bold;
+      text-shadow: 0 0 10px rgba(0, 255, 191, 0.5);
+      z-index: 5;
+    }
+    .chance {
+      color: #00e3e3;
+      margin-bottom: 20px;
+      font-size: 1.1em;
+      font-weight: bold;
+      text-shadow: 0 0 10px rgba(0, 227, 227, 0.5);
+    }
+    .reels {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 25px;
+    }
+    .reel {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(145deg, #1b4d5c, #2a5d6c);
+      border-radius: 18px;
+      font-size: 2.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3),
+                  inset 0 0 15px rgba(0, 211, 255, 0.3);
+      border: 2px solid rgba(0, 255, 255, 0.2);
+      transition: transform 0.3s ease;
+    }
+    .reel.spinning {
+        animation: spinReel 0.1s linear infinite;
+    }
+    @keyframes spinReel {
+        0% { transform: rotateY(0deg); }
+        100% { transform: rotateY(360deg); }
+    }
+    .reel.stopping {
+        animation: stopReel 0.5s ease-out forwards;
+    }
+    @keyframes stopReel {
+        0% { transform: rotateY(0deg); }
+        100% { transform: rotateY(360deg); }
+    }
+    
+    @keyframes spin {
+        0% { transform: rotateY(0deg); }
+        100% { transform: rotateY(360deg); }
+    }
+    
+    .reel.win {
+        animation: glow 1s ease-in-out infinite;
+    }
+    @keyframes glow {
+        0%, 100% { box-shadow: 0 0 15px rgba(0, 255, 191, 0.8); }
+        50% { box-shadow: 0 0 25px rgba(0, 255, 191, 1); }
+    }	
+    
+    .input-group {
+      margin-bottom: 15px;
+    }
+    input[type="number"] {
+      padding: 12px 18px;
+      border: 2px solid rgba(0, 255, 255, 0.3);
+      border-radius: 15px;
+      outline: none;
+      background: linear-gradient(145deg, #0f2f38, #1a3f48);
+      color: #fff;
+      width: 100%;
+      font-size: 1.1rem;
+      box-shadow: inset 0 0 10px rgba(0, 196, 255, 0.2);
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+    input[type="number"]:focus {
+      border-color: #00e3e3;
+      box-shadow: 0 0 15px rgba(0, 227, 227, 0.4),
+                  inset 0 0 10px rgba(0, 196, 255, 0.3);
+    }
+    input[type="number"]::placeholder {
+      color: rgba(255, 255, 255, 0.6);
+    }
+    .btn {
+      background: linear-gradient(45deg, #ff5757, #ff7e6d);
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      font-size: 1.1rem;
+      border-radius: 35px;
+      cursor: pointer;
+      margin-top: 15px;
+      box-shadow: 0 8px 20px rgba(255, 87, 87, 0.4);
+      transition: all 0.3s ease;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 25px rgba(255, 87, 87, 0.6);
+    }
+    .btn:active {
+      transform: translateY(-1px);
+    }
+    .result {
+      margin-top: 20px;
+      font-weight: bold;
+      font-size: 1.2rem;
+      min-height: 30px;
+    }
+    .settings-icon {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      cursor: pointer;
+      font-size: 1.8rem;
+      transition: all 0.3s ease;
+      filter: drop-shadow(0 0 5px rgba(0, 227, 227, 0.5));
+    }
+    .settings-icon:hover {
+      transform: rotate(90deg) scale(1.2);
+    }
+    .settings-panel {
+      position: absolute;
+      top: 60px;
+      right: 15px;
+      background: linear-gradient(145deg, #0d2e38, #1a3f48);
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5),
+                  0 0 20px rgba(0, 255, 255, 0.2);
+      z-index: 10;
+      width: 200px;
+      border: 1px solid rgba(0, 255, 255, 0.2);
+    }
+    .settings-panel select {
+      width: 100%;
+      padding: 10px;
+      background: linear-gradient(145deg, #123, #1a3f48);
+      background-color: #123;
+      color: #ff6c63;
+      border: 1px solid rgba(0, 255, 255, 0.3);
+      border-radius: 10px;
+      margin-bottom: 15px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .settings-panel select:hover {
+      border-color: #00e3e3;
+      box-shadow: 0 0 10px rgba(0, 227, 227, 0.3);
+    }
+    .settings-panel label {
+      display: block;
+      margin-bottom: 8px;
+      color: #00e3e3;
+      font-size: 1rem;
+      font-weight: bold;
+    }
+    .tabs {
+      display: flex;
+      margin-bottom: 25px;
+      border-bottom: 3px solid rgba(0, 255, 255, 0.3);
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 15px 15px 0 0;
+      overflow: hidden;
+    }
+    .tab {
+      flex: 1;
+      padding: 15px;
+      cursor: pointer;
+      color: #00e3e3;
+      transition: all 0.3s ease;
+      font-weight: bold;
+      font-size: 1.1rem;
+      position: relative;
+    }
+    .tab:hover {
+      background: rgba(0, 255, 255, 0.1);
+    }
+    .tab.active {
+      background: linear-gradient(45deg, rgba(255, 126, 109, 0.2), rgba(255, 154, 158, 0.2));
+      color: #ff7e6d;
+      border-bottom: 3px solid #ff7e6d;
+    }
+    .tab-content {
+      display: none;
+      animation: fadeIn 0.5s ease;
+    }
+    .tab-content.active {
+      display: block;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    /* Crash Game Styles */
+    .crash-container {
+      text-align: center;
+    }
+    .crash-graph {
+      width: 100%;
+      height: 220px;
+      background: linear-gradient(135deg, #0f2f38, #1a4a5c);
+      border-radius: 20px;
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 25px;
+      box-shadow: inset 0 0 20px rgba(0, 255, 255, 0.2),
+                  0 8px 25px rgba(0, 0, 0, 0.3);
+      border: 2px solid rgba(0, 255, 255, 0.2);
+    }
+    .crash-multiplier {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      font-size: 2.5rem;
+      color: #00ffbf;
+      font-weight: bold;
+      text-shadow: 0 0 15px rgba(0, 255, 191, 0.8);
+      background: rgba(0, 0, 0, 0.5);
+      padding: 5px 15px;
+      border-radius: 10px;
+      backdrop-filter: blur(5px);
+    }
+    .crash-info {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      background: rgba(0, 0, 0, 0.5);
+      padding: 8px 15px;
+      border-radius: 10px;
+      backdrop-filter: blur(5px);
+      text-align: left;
+    }
+    .crash-time {
+      color: #00ffbf;
+      font-weight: bold;
+      text-shadow: 0 0 10px rgba(0, 255, 191, 0.5);
+      font-size: 1rem;
+      margin-bottom: 5px;
+    }
+    .crash-speed {
+      color: #ff9a00;
+      font-weight: bold;
+      text-shadow: 0 0 10px rgba(255, 154, 0, 0.5);
+      font-size: 1rem;
+    }
+    .crash-controls {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .crash-bet-input {
+      flex: 1;
+      min-width: 150px;
+      position: relative;
+    }
+    .crash-bet-input::before {
+      content: "💰";
+      position: absolute;
+      left: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.2rem;
+      z-index: 1;
+    }
+    .crash-bet-input input {
+      padding-left: 40px;
+    }
+    .crash-start {
+      background: linear-gradient(45deg, #00ffbf, #00d4aa);
+      color: #000;
+      font-weight: bold;
+      box-shadow: 0 8px 20px rgba(0, 255, 191, 0.4);
+    }
+    .crash-start:hover {
+      box-shadow: 0 12px 25px rgba(0, 255, 191, 0.6);
+    }
+    .crash-cashout {
+      background: linear-gradient(45deg, #ff9a00, #ff6b00);
+      color: #fff;
+      font-weight: bold;
+      box-shadow: 0 8px 20px rgba(255, 154, 0, 0.4);
+    }
+    .crash-cashout:hover {
+      box-shadow: 0 12px 25px rgba(255, 154, 0, 0.6);
+    }
+    .crash-cashout:disabled {
+      background: linear-gradient(45deg, #555, #777);
+      cursor: not-allowed;
+      opacity: 0.6;
+      box-shadow: none;
+    }
+    .crash-status {
+      margin-top: 20px;
+      font-weight: bold;
+      font-size: 1.2rem;
+      min-height: 30px;
+      padding: 10px;
+      border-radius: 10px;
+      background: rgba(0, 0, 0, 0.2);
+    }
+    .crash-progress-container {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      right: 20px;
+      height: 40px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 20px;
+      overflow: hidden;
+      border: 2px solid rgba(0, 255, 255, 0.2);
+    }
+    .crash-progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, #00ffbf, #00d4aa);
+      border-radius: 18px;
+      width: 0%;
+      transition: width 0.1s linear;
+      position: relative;
+      overflow: hidden;
+    }
+    .crash-progress-bar::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+      animation: shimmer 2s infinite;
+    }
+    @keyframes shimmer {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+    .crash-rocket {
+      position: absolute;
+      bottom: 25px;
+      left: 25px;
+      font-size: 30px;
+      transition: left 0.1s linear;
+      z-index: 2;
+      filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.5));
+      animation: rocketFloat 0.5s ease-in-out infinite alternate;
+    }
+    @keyframes rocketFloat {
+      from { transform: translateY(0); }
+      to { transform: translateY(-5px); }
+    }
+    .crash-scale {
+      position: absolute;
+      bottom: 70px;
+      left: 20px;
+      right: 20px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      color: rgba(255, 255, 255, 0.6);
+    }
+    /* Темы */
+    body.ocean {
+      background: linear-gradient(145deg, #001f29, #073c4a) !important;
+    }
+    body.space {
+      background: radial-gradient(ellipse at top, #000428, #004e92) !important;
+    }
+    body.neon {
+      background: linear-gradient(135deg, #000000, #1a1a1a) !important;
+    }
+    body.sunset {
+      background: linear-gradient(135deg, #ff512f, #dd2476) !important;
+    }
+    body.ice {
+      background: linear-gradient(145deg, #c9d6ff, #e2e2e2) !important;
+    }
+    body.matrix {
+      background: #000 !important;
+    }
+    body.darkness {
+      background: #111 !important;
+    }
+    .container.ocean { 
+      background: linear-gradient(145deg, rgba(18, 51, 63, 0.9), rgba(26, 63, 79, 0.9)) !important;
+    }
+    .container.space { 
+      background: linear-gradient(145deg, rgba(28, 31, 60, 0.9), rgba(38, 41, 80, 0.9)) !important;
+    }
+    .container.neon { 
+      background: linear-gradient(145deg, rgba(32, 32, 32, 0.9), rgba(42, 42, 42, 0.9)) !important;
+    }
+    .container.sunset { 
+      background: linear-gradient(145deg, rgba(62, 29, 44, 0.9), rgba(82, 39, 64, 0.9)) !important;
+    }
+    .container.ice { 
+      background: linear-gradient(145deg, rgba(240, 248, 255, 0.9), rgba(230, 240, 250, 0.9)) !important;
+      color: #000 !important;
+    }
+    .container.matrix { 
+      background: linear-gradient(145deg, rgba(0, 17, 0, 0.9), rgba(0, 27, 0, 0.9)) !important;
+      color: #0f0 !important;
+    }
+    .container.darkness { 
+      background: linear-gradient(145deg, rgba(26, 26, 26, 0.9), rgba(36, 36, 36, 0.9)) !important;
+    }
+    
+    /* Mobile Responsive */
+    @media (max-width: 480px) {
+      .container {
+        padding: 20px;
+        width: 98%;
+        max-width: none;
+      }
+      h1 {
+        font-size: 1.8em;
+        margin-bottom: 10px;
+      }
+      .reel {
+        width: 70px;
+        height: 70px;
+        font-size: 2rem;
+      }
+      .reels {
+        gap: 8px;
+        margin-bottom: 20px;
+      }
+      .btn {
+        padding: 12px 25px;
+        font-size: 1rem;
+      }
+      .crash-graph {
+        height: 180px;
+        margin-bottom: 20px;
+      }
+      .crash-multiplier {
+        font-size: 2rem;
+        padding: 3px 10px;
+      }
+      .crash-controls {
+        gap: 8px;
+      }
+      .crash-bet-input {
+        min-width: 120px;
+      }
+      .settings-panel {
+        width: 180px;
+        right: 10px;
+        padding: 15px;
+      }
+      .tab {
+        padding: 12px;
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+<body class="ocean">
+  <div class="container ocean" id="game">
+    <div class="balance-display" id="balanceDisplay">Баланс: 1000</div>
+    <div class="settings-icon" id="settingsBtn">⚙️</div>
+    <h1>Депалка</h1>
+    
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('slots')">Слоты</div>
+      <div class="tab" onclick="switchTab('crash')">Crash</div>
+    </div>
+    
+    <!-- Slots Tab -->
+    <div class="tab-content active" id="slots-tab">
+      <div class="chance" id="chanceDisplay">Шанс: 1 к 18 (5.56%)</div>
+      <div class="reels">
+        <div class="reel" id="r1">🍋</div>
+        <div class="reel" id="r2">🍓</div>
+        <div class="reel" id="r3">🍊</div>
+      </div>
+      <div class="input-group">
+        <input type="number" id="bet" placeholder="Введите ставку..." min="1"/>
+      </div>
+      <button class="btn" onclick="spin()">КРУТИТЬ</button>
+      <div class="result" id="resultText"></div>
+    </div>
+    
+    <!-- Crash Tab -->
+    <div class="tab-content" id="crash-tab">
+      <div class="crash-container">
+        <div class="crash-graph" id="crashGraph">
+          <div class="crash-multiplier" id="crashMultiplier">1.00x</div>
+          <div class="crash-info">
+            <div class="crash-time" id="crashTime">0.00с</div>
+            <div class="crash-speed" id="crashSpeed">Нормальная</div>
+          </div>
+          <canvas id="crashCanvas" width="380" height="220"></canvas>
+          <div class="crash-scale">
+            <span>1x</span>
+            <span>2x</span>
+            <span>3x</span>
+            <span>4x</span>
+            <span>5x</span>
+            <span>6x</span>
+          </div>
+          <div class="crash-progress-container">
+            <div class="crash-progress-bar" id="crashProgressBar"></div>
+          </div>
+          <div class="crash-rocket" id="crashRocket">🚀</div>
+        </div>
+        
+        <div class="crash-controls">
+          <div class="input-group crash-bet-input">
+            <input type="number" id="crashBet" placeholder="Ставка (мин. 8)" min="8"/>
+          </div>
+          <button class="btn crash-start" id="crashStartBtn" onclick="startCrash()">СТАРТ</button>
+          <button class="btn crash-cashout" id="crashCashoutBtn" onclick="cashout()" disabled>ЗАБРАТЬ</button>
+        </div>
+        <div class="crash-status" id="crashStatus"></div>
+      </div>
+    </div>
+    
+    <div class="settings-panel" id="settingsPanel" style="display: none;">
+      <label>Шанс:</label>
+      <select id="chanceSelect">
+        <option value="18">1 к 18</option>
+        <option value="17">1 к 17</option>
+        <option value="16">1 к 16</option>
+        <option value="15">1 к 15</option>
+        <option value="14">1 к 14</option>
+        <option value="13">1 к 13</option>
+        <option value="12">1 к 12</option>
+        <option value="11">1 к 11</option>
+        <option value="10">1 к 10</option>
+        <option value="9">1 к 9</option>
+        <option value="8">1 к 8</option>
+        <option value="7">1 к 7</option>
+        <option value="6">1 к 6</option>
+        <option value="5">1 к 5</option>
+        <option value="4">1 к 4</option>
+        <option value="3">1 к 3</option>
+        <option value="2">1 к 2</option>
+      </select>
+      <label>Множитель:</label>
+      <select id="multiplierSelect">
+        <option value="2">x2</option>
+        <option value="3">x3</option>
+      </select>
+      <label>Тема:</label>
+      <select id="themeSelect">
+        <option value="ocean">Океанская</option>
+        <option value="space">Космос</option>
+        <option value="neon">Неон</option>
+        <option value="sunset">Каайф</option>
+        <option value="ice">Лед</option>
+        <option value="matrix">Матрица</option>
+        <option value="darkness">Тоже кайф</option>
+      </select>
+    </div>
+  </div>
+  <script>
+    // Инициализация баланса
+    let balance = 1000;
+    const balanceDisplay = document.getElementById('balanceDisplay');
+    
+    // Функция обновления баланса
+    function updateBalance() {
+      balanceDisplay.textContent = `Баланс: ${balance}`;
+    }
+    
+    // Функция проверки достаточности средств
+    function canAffordBet(amount) {
+      return balance >= amount;
+    }
+    
+    const symbols = ['🍒', '🍓', '🍋', '🍊', '🍇', '🍉', '🍎', '🥝', '🍏', '🍌'];
+    const winningCombo = ['🍒', '🍒', '🍒'];
+    
+    function getRandomSymbol() {
+      return symbols[Math.floor(Math.random() * symbols.length)];
+    }
+    
+    function updateChanceDisplay() {
+      const chanceValue = document.getElementById('chanceSelect').value;
+      const percentage = (100 / chanceValue).toFixed(2);
+      document.getElementById('chanceDisplay').textContent = `Шанс: 1 к ${chanceValue} (${percentage}%)`;
+    }
+    
+    function spin() {
+      const betInput = document.getElementById('bet');
+      const bet = parseInt(betInput.value);
+      const resultText = document.getElementById('resultText');
+      const chanceValue = parseInt(document.getElementById('chanceSelect').value);
+      const multiplier = parseInt(document.getElementById('multiplierSelect').value);
+      
+      // Проверка корректности ставки
+      if (!bet || bet <= 0) {
+        resultText.textContent = 'Некорректный ввод';
+        resultText.style.color = '#ff7e7e';
+        return;
+      }
+      
+      // Проверка достаточности средств
+      if (!canAffordBet(bet)) {
+        resultText.textContent = 'Недостаточно средств!';
+        resultText.style.color = '#ff7e7e';
+        return;
+      }
+      
+      // Списываем ставку с баланса
+      balance -= bet;
+      updateBalance();
+      
+      // Очищаем предыдущие результаты
+      resultText.textContent = '';
+      
+      // Запускаем анимацию вращения для всех барабанов
+      const reels = [
+        document.getElementById('r1'),
+        document.getElementById('r2'),
+        document.getElementById('r3')
+      ];
+      
+      reels.forEach(reel => {
+        reel.classList.add('spinning');
+        reel.classList.remove('stopping');
+      });
+      
+      const winChance = 1 / chanceValue;
+      const isWin = Math.random() < winChance;
+      
+      // Генерируем финальные символы
+      let finalSymbols;
+      if (isWin) {
+        finalSymbols = ['🍒', '🍒', '🍒'];
+      } else {
+        finalSymbols = [
+          getRandomSymbol(),
+          getRandomSymbol(),
+          getRandomSymbol()
+        ];
+        // Убедимся, что не три вишни
+        while (finalSymbols.every(s => s === '🍒')) {
+          finalSymbols = [
+            getRandomSymbol(),
+            getRandomSymbol(),
+            getRandomSymbol()
+          ];
+        }
+      }
+      
+      // Останавливаем барабаны по очереди
+      const stopDelays = [800, 1200, 1600]; // Задержки для каждого барабана
+      
+      reels.forEach((reel, index) => {
+        setTimeout(() => {
+          reel.classList.remove('spinning');
+          reel.classList.add('stopping');
+          
+          // Устанавливаем финальный символ после анимации
+          setTimeout(() => {
+            reel.textContent = finalSymbols[index];
+            reel.classList.remove('stopping');
+            
+            // Показываем результат после остановки последнего барабана
+            if (index === reels.length - 1) {
+              if (isWin) {
+                // Добавляем свечение к барабанам
+                reels.forEach(reel => {
+                  reel.classList.add('win');
+                  setTimeout(() => reel.classList.remove('win'), 3000);
+                });
+                
+                // Начисляем выигрыш
+                const winAmount = bet * multiplier;
+                balance += winAmount;
+                updateBalance();
+                
+                resultText.textContent = `ПОБЕДА! +${winAmount} монет`;
+                resultText.style.color = '#00ffbf';
+              } else {
+                resultText.textContent = `ПРОИГРЫШ... -${bet} монет`;
+                resultText.style.color = '#ff7e7e';
+              }
+            }
+          }, 500);
+        }, stopDelays[index]);
+      });
+    }
+    
+    // Tab switching
+    function switchTab(tabName) {
+      document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+      
+      if (tabName === 'slots') {
+        document.querySelectorAll('.tab')[0].classList.add('active');
+        document.getElementById('slots-tab').classList.add('active');
+      } else {
+        document.querySelectorAll('.tab')[1].classList.add('active');
+        document.getElementById('crash-tab').classList.add('active');
+      }
+    }
+    
+    // Crash Game Logic
+    let crashGame = {
+      active: false,
+      multiplier: 1.00,
+      crashPoint: 0,
+      startTime: 0,
+      animationId: null,
+      bet: 0,
+      cashedOut: false
+    };
+    
+    const canvas = document.getElementById('crashCanvas');
+    const ctx = canvas.getContext('2d');
+    const crashMultiplierEl = document.getElementById('crashMultiplier');
+    const crashStatusEl = document.getElementById('crashStatus');
+    const crashTimeEl = document.getElementById('crashTime');
+    const crashSpeedEl = document.getElementById('crashSpeed');
+    const crashProgressBar = document.getElementById('crashProgressBar');
+    const crashRocket = document.getElementById('crashRocket');
+    
+    // Responsive canvas
+    function resizeCanvas() {
+      const container = document.getElementById('crashGraph');
+      canvas.width = container.offsetWidth;
+      canvas.height = container.offsetHeight;
+    }
+    
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+    
+    function generateCrashPoint() {
+      const rand = Math.random();
+      let crashPoint;
+      
+      if (rand < 0.4) {
+        crashPoint = 1.01 + Math.random() * 0.99;
+      } else if (rand < 0.7) {
+        crashPoint = 2 + Math.random() * 1;
+      } else if (rand < 0.85) {
+        crashPoint = 3 + Math.random() * 1;
+      } else if (rand < 0.95) {
+        crashPoint = 4 + Math.random() * 1;
+      } else {
+        crashPoint = 5 + Math.random() * 1;
+      }
+      
+      return parseFloat(crashPoint.toFixed(2));
+    }
+    
+    function drawRocket(x, y) {
+      // Ракета тело
+      ctx.fillStyle = '#ff5757';
+      ctx.beginPath();
+      ctx.moveTo(x, y - 15);
+      ctx.lineTo(x - 10, y + 10);
+      ctx.lineTo(x + 10, y + 10);
+      ctx.closePath();
+      ctx.fill();
+      
+      // Ракета крылья
+      ctx.fillStyle = '#ff9a00';
+      ctx.beginPath();
+      ctx.moveTo(x - 10, y + 10);
+      ctx.lineTo(x - 15, y + 20);
+      ctx.lineTo(x, y + 10);
+      ctx.closePath();
+      ctx.fill();
+      
+      ctx.beginPath();
+      ctx.moveTo(x + 10, y + 10);
+      ctx.lineTo(x + 15, y + 20);
+      ctx.lineTo(x, y + 10);
+      ctx.closePath();
+      ctx.fill();
+      
+      // Ракета огонь
+      ctx.fillStyle = '#00ffbf';
+      ctx.beginPath();
+      ctx.moveTo(x - 5, y + 10);
+      ctx.lineTo(x, y + 25);
+      ctx.lineTo(x + 5, y + 10);
+      ctx.closePath();
+      ctx.fill();
+    }
+    
+    function drawCrashGraph() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      if (!crashGame.active) return;
+      
+      const elapsed = (Date.now() - crashGame.startTime) / 1000;
+      crashGame.multiplier = Math.pow(1.12, elapsed);
+      
+      // Draw grid
+      ctx.strokeStyle = 'rgba(0, 255, 255, 0.1)';
+      ctx.lineWidth = 1;
+      for (let i = 0; i < 5; i++) {
+        const y = (canvas.height / 5) * i;
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(canvas.width, y);
+        ctx.stroke();
+      }
+      
+      // Draw curve
+      ctx.beginPath();
+      ctx.strokeStyle = '#00ffbf';
+      ctx.lineWidth = 4;
+      ctx.shadowBlur = 10;
+      ctx.shadowColor = '#00ffbf';
+      
+      let lastX = 0, lastY = canvas.height;
+      
+      for (let x = 0; x < canvas.width; x++) {
+        const t = x / canvas.width * elapsed;
+        const y = canvas.height - (Math.pow(1.12, t) - 1) * 15;
+        
+        if (x === 0) {
+          ctx.moveTo(x, y);
+        } else {
+          ctx.lineTo(x, y);
+        }
+        
+        lastX = x;
+        lastY = y;
+      }
+      
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+      
+      // Draw rocket at the end of the curve
+      drawRocket(lastX, lastY);
+      
+      // Update displays
+      crashMultiplierEl.textContent = crashGame.multiplier.toFixed(2) + 'x';
+      crashTimeEl.textContent = elapsed.toFixed(2) + 'с';
+      
+      // Update progress bar and rocket position
+      const progress = Math.min((crashGame.multiplier - 1) / 5 * 100, 100);
+      crashProgressBar.style.width = progress + '%';
+      
+      const rocketPosition = Math.min((crashGame.multiplier - 1) / 5 * 100, 95);
+      crashRocket.style.left = rocketPosition + '%';
+      
+      // Update speed based on multiplier
+      if (crashGame.multiplier < 2) {
+        crashSpeedEl.textContent = 'Нормальная';
+      } else if (crashGame.multiplier < 3) {
+        crashSpeedEl.textContent = 'Быстрая';
+      } else if (crashGame.multiplier < 4) {
+        crashSpeedEl.textContent = 'Очень быстрая';
+      } else {
+        crashSpeedEl.textContent = 'Экстремальная';
+      }
+      
+      // Check if crashed
+      if (crashGame.multiplier >= crashGame.crashPoint) {
+        endCrash(false);
+      } else {
+        crashGame.animationId = requestAnimationFrame(drawCrashGraph);
+      }
+    }
+    
+    function startCrash() {
+      const betInput = document.getElementById('crashBet');
+      const bet = parseInt(betInput.value);
+      
+      // Проверка корректности ставки
+      if (!bet || bet < 8) {
+        crashStatusEl.textContent = 'Минимальная ставка: 8 монет';
+        crashStatusEl.style.color = '#ff7e7e';
+        return;
+      }
+      
+      // Проверка достаточности средств
+      if (!canAffordBet(bet)) {
+        crashStatusEl.textContent = 'Недостаточно средств!';
+        crashStatusEl.style.color = '#ff7e7e';
+        return;
+      }
+      
+      // Списываем ставку с баланса
+      balance -= bet;
+      updateBalance();
+      
+      crashGame = {
+        active: true,
+        multiplier: 1.00,
+        crashPoint: generateCrashPoint(),
+        startTime: Date.now(),
+        animationId: null,
+        bet: bet,
+        cashedOut: false
+      };
+      
+      // Reset progress bar and rocket
+      crashProgressBar.style.width = '0%';
+      crashRocket.style.left = '0%';
+      
+      document.getElementById('crashStartBtn').disabled = true;
+      document.getElementById('crashCashoutBtn').disabled = false;
+      crashStatusEl.textContent = 'Игра началась!';
+      crashStatusEl.style.color = '#00e3e3';
+      
+      drawCrashGraph();
+    }
+    
+    function cashout() {
+      if (!crashGame.active || crashGame.cashedOut) return;
+      
+      crashGame.cashedOut = true;
+      const winAmount = Math.floor(crashGame.bet * crashGame.multiplier);
+      
+      // Добавляем выигрыш к балансу
+      balance += winAmount;
+      updateBalance();
+      
+      crashStatusEl.textContent = `Забрали ${winAmount} монет! (${crashGame.multiplier.toFixed(2)}x)`;
+      crashStatusEl.style.color = '#00ffbf';
+      
+      endCrash(true);
+    }
+    
+    function endCrash(cashedOut) {
+      crashGame.active = false;
+      
+      if (crashGame.animationId) {
+        cancelAnimationFrame(crashGame.animationId);
+      }
+      
+      document.getElementById('crashStartBtn').disabled = false;
+      document.getElementById('crashCashoutBtn').disabled = true;
+      
+      if (!cashedOut) {
+        crashStatusEl.textContent = `CRASH на ${crashGame.crashPoint.toFixed(2)}x!`;
+        crashStatusEl.style.color = '#ff7e7e';
+      }
+    }
+    
+    // Настройки
+    const settingsBtn = document.getElementById('settingsBtn');
+    const settingsPanel = document.getElementById('settingsPanel');
+    const themeSelect = document.getElementById('themeSelect');
+    const gameContainer = document.getElementById('game');
+    const chanceSelect = document.getElementById('chanceSelect');
+    
+    settingsBtn.addEventListener('click', () => {
+      settingsPanel.style.display = settingsPanel.style.display === 'none' ? 'block' : 'none';
+    });
+    
+    document.addEventListener('click', (e) => {
+      if (!settingsPanel.contains(e.target) && !settingsBtn.contains(e.target)) {
+        settingsPanel.style.display = 'none';
+      }
+    });
+    
+    themeSelect.addEventListener('change', () => {
+      const theme = themeSelect.value;
+      document.body.className = theme;
+      gameContainer.className = `container ${theme}`;
+    });
+    
+    chanceSelect.addEventListener('change', updateChanceDisplay);
+    
+    // Инициализация
+    updateChanceDisplay();
+    updateBalance();
+  </script>
+</body>
+</html>

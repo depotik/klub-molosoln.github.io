@@ -1,0 +1,145 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  nickname  String   @unique
+  email     String?  @unique
+  password  String?  // Хешированный пароль
+  balance   Float    @default(0)
+  role      String   @default("user") // user, mayor, creator
+  isAdmin   Boolean  @default(false) // Для обратной совместимости
+  theme     String   @default("space") // space, neon, sunset, ice, matrix, dark, ocean
+  isActive  Boolean  @default(true) // Активен ли аккаунт
+  lastLogin DateTime? // Последний вход
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  job       Job?
+  credits   Credit[]
+  sentTransactions Transaction[] @relation("SentTransactions")
+  receivedTransactions Transaction[] @relation("ReceivedTransactions")
+  adminLogs AdminLog[]
+  depalkaSessions DepalkaSession[]
+  depalkaGames DepalkaGame[] // Игры, где пользователь был игроком
+  depalkaWorkerGames DepalkaGame[] @relation("DepalkaWorker") // Игры, где пользователь был работником
+  
+  @@map("users")
+}
+
+model Job {
+  id        String   @id @default(cuid())
+  title     String
+  salary    Float
+  userId    String?  @unique
+  user      User?    @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Credit {
+  id            String   @id @default(cuid())
+  amount        Float    // Original loan amount
+  userId        String
+  user          User     @relation(fields: [userId], references: [id])
+  interestRate  Float    @default(0.03) // 3% daily interest rate
+  isPaid        Boolean  @default(false) // Payment status
+  paidAmount    Float    @default(0) // Amount paid towards this credit
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  // Computed fields
+  totalOwed     Float    // Total amount owed including interest
+  daysActive    Int      // Number of days the credit has been active
+  
+  @@map("credits")
+}
+
+model Transaction {
+  id        String   @id @default(cuid())
+  amount    Float
+  senderId  String
+  receiverId String
+  sender    User     @relation("SentTransactions", fields: [senderId], references: [id])
+  receiver  User     @relation("ReceivedTransactions", fields: [receiverId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+model GameSettings {
+  id        String   @id @default(cuid())
+  isDay     Boolean  @default(true) // true = day, false = night
+  lastDayChange DateTime @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("game_settings")
+}
+
+model DepalkaGame {
+  id          String   @id @default(cuid())
+  playerId    String
+  player      User     @relation(fields: [playerId], references: [id])
+  amount      Float    // Original amount
+  gameAmount  Float    // Amount being played
+  status      String   // pending, confirmed, playing, finished
+  result      String?  // win, lose
+  multiplier  Float?   // Multiplier for win
+  workerId    String?  // ID работника казино
+  worker      User?    @relation("DepalkaWorker", fields: [workerId], references: [id])
+  confirmedAt DateTime? // Когда игрок подтвердил
+  finishedAt  DateTime? // Когда игра завершилась
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("depalka_games")
+}
+
+model CreatorSettings {
+  id        String   @id @default(cuid())
+  secretKey String   @unique // Секретный ключ для доступа креатора
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("creator_settings")
+}
+
+model AdminLog {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  action    String   // Тип действия: add_money, deduct_money, set_job, etc.
+  targetId  String?  // ID цели (пользователя, работы и т.д.)
+  amount    Float?   // Сумма денег
+  details   String?  // Дополнительные детали в JSON
+  createdAt DateTime @default(now())
+  
+  @@map("admin_logs")
+}
+
+model DepalkaSession {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  targetId    String   // ID пользователя для игры
+  amount      Float    // Сумма ставки
+  status      String   @default("pending") // pending, confirmed, playing, completed, cancelled
+  gameData    String?  // Данные игры в JSON
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("depalka_sessions")
+}
